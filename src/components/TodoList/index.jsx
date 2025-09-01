@@ -53,7 +53,7 @@ export default function TodoList() {
         <span>未打包: {uncompletedCount}</span>
       </div>
       <div className={styles.filterDiv}>
-        <label>
+        <label style={{ padding: "0 12px" }}>
           <input
             type="checkbox"
             checked={isFilter}
