@@ -1,8 +1,8 @@
-import {useTodoListStore} from "../../stores/todoListStore";
+import { useTodoListStore } from "../../stores/todoListStore";
 import { useState } from "react";
 import styles from "./index.module.css";
 
-function TodoItem({ title, completed, onToggle }) {  
+function TodoItem({ title, completed, onToggle }) {
   const itemClassName = `${styles.item} ${completed ? styles.checked : ""}`;
   return (
     <li className={itemClassName}>
@@ -15,30 +15,44 @@ function TodoItem({ title, completed, onToggle }) {
 }
 
 export default function TodoList() {
-  const { todos: todoItems, addTodo, toggleTodo } = useTodoListStore();
-  const [todos, setTodos] = useState(todoItems);
+  const { todos, addTodo, setTodos, clearCompleted } = useTodoListStore();
+  const totalCount = todos.length,
+    uncompletedCount = todos.filter((item) => !item.completed).length,
+    completedCount = totalCount - uncompletedCount;
   const [isFilter, setIsFilter] = useState(false);
+  const [inputValue, setInputValue] = useState("");
   const filterItems = isFilter
     ? todos.filter((item) => !item.completed)
     : todos;
-  const handleToggle = (currentItem) => {
-    setTodos(
-      todos.map((item) =>
-        item.id === currentItem.id
-          ? { ...item, completed: !item.completed }
-          : item
-      )
-    );
+  const handleToggle = (item) => {
+    setTodos(item.id);
+  };
+  const handleAdd = (e) => {
+    e.preventDefault();
+    const value = inputValue.trim();
+    if (!value) return;
+    addTodo({
+      id: Date.now(), // 如需用nanoid: nanoid(),
+      title: value,
+      completed: false,
+    });
+    setInputValue("");
+    console.log(todos);
+  };
+  const handleClear = () => {
+    clearCompleted();
   };
   return (
     <section className={styles.todoList}>
-      <h1>Sally Ride 的 行李清单 <br /> (Zustand 版本)</h1>
+      <h1>
+        Sally Ride 的 行李清单 <br /> (Zustand 版本)
+      </h1>
       <div className={styles.summary}>
-        <span>总计: {todos.length}</span>
-        <span>已打包: {todos.filter((item) => item.completed).length}</span>
-        <span>未打包: {todos.filter((item) => !item.completed).length}</span>
+        <span>总计: {totalCount}</span>
+        <span>已打包: {completedCount}</span>
+        <span>未打包: {uncompletedCount}</span>
       </div>
-      <div className={styles.filterDiv}>          
+      <div className={styles.filterDiv}>
         <label>
           <input
             type="checkbox"
@@ -48,10 +62,15 @@ export default function TodoList() {
           过滤已打包的物品
         </label>
       </div>
-      <div className={styles.addTodo}>
-        <input type="text" />
-        <button style={{ backgroundColor: "#027bfe", color: "#fff" }}>添加</button>
-      </div>
+      <form className={styles.addTodo} onSubmit={handleAdd}>
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder="请输入待办事项"
+        />
+        <button type="submit">添加</button>
+      </form>
       <ul>
         {filterItems.map((item) => (
           <TodoItem
@@ -61,7 +80,9 @@ export default function TodoList() {
           />
         ))}
       </ul>
-      <button className={styles.clearButton}>清除已完成的(2)</button>
+      <button className={styles.clearButton} onClick={handleClear}>
+        清除已完成的({completedCount})
+      </button>
     </section>
   );
 }
