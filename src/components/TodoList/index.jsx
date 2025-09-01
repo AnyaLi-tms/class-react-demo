@@ -37,7 +37,6 @@ export default function TodoList() {
       completed: false,
     });
     setInputValue("");
-    console.log(todos);
   };
   const handleClear = () => {
     clearCompleted();
