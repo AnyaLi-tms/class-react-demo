@@ -7,6 +7,9 @@
     padding: 10px 0;
     text-align: left;
   }
+  .pagination {
+    margin-top: 10px;
+  }
   /* 去除ul的圆点 */
   ul {
     list-style: none;

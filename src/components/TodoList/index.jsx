@@ -1,13 +1,15 @@
 import { useTodoListStore } from "../../stores/todoListStore";
 import styles from "./index.module.css";
-import Pagination from "./components/Pagination";
 import TodoItem from "./components/TodoItem";
 import AddItem from "./components/AddItem";
 import Summary from "./components/Summary";
-import { useEffect } from "react";
+import { Pagination } from 'antd';
+import { useCallback, useEffect } from "react";
+import responseTodos from "./todoItems.json"
+import { Link, useSearchParams } from 'react-router';
 
 export default function TodoList() {
-  const { todoTitle, todos, setTodos, isFilter, setIsFilter, setTodoStatus, clearCompleted } =
+  const { todoTitle, todos, fetchTodos, pageTodos, setPageTodos, setTodos, isFilter, setIsFilter, setTodoStatus, clearCompleted, defaultPage, defaultPageSize, page, pageSize, setPagination } =
     useTodoListStore();
   const totalCount = todos.length;
   const uncompletedCount = todos.filter((item) => !item.completed).length;
@@ -15,6 +17,13 @@ export default function TodoList() {
   const filterItems = isFilter
     ? todos.filter((item) => !item.completed)
     : todos;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const handlePagination = useCallback((page, pageSize) => {
+    setSearchParams({ page, pageSize });
+    const currentPageTodos = setPagination(searchParams.get('page') || defaultPage, searchParams.get('pageSize') || defaultPageSize);
+    setPageTodos(currentPageTodos);
+  }, [defaultPage, defaultPageSize, searchParams, setPagination, setSearchParams]);
+
   const renderFilterDiv = () => {
     return (
       <div className={styles.filter}>
@@ -51,30 +60,9 @@ export default function TodoList() {
   };
 
   useEffect(() => {
-    const initTodos = [
-    { id: 1, title: "宇航服", completed: false },
-    { id: 2, title: "带金箔的头盔", completed: true },
-    { id: 3, title: "Tam 的照片", completed: false },
-    { id: 4, title: "氧气罐", completed: false },
-    { id: 5, title: "水壶", completed: false },
-    { id: 6, title: "能量棒", completed: true },
-    { id: 7, title: "备用手套", completed: false },
-    { id: 8, title: "通讯设备", completed: true },
-    { id: 9, title: "航天日志本", completed: true },
-    { id: 10, title: "太阳镜", completed: true },
-    { id: 11, title: "备用电池", completed: false },
-    { id: 12, title: "地球照片", completed: false },
-    { id: 13, title: "科学实验包", completed: false },
-    { id: 14, title: "导航仪", completed: false },
-    { id: 15, title: "个人洗漱包", completed: false },
-    { id: 16, title: "应急药品", completed: false },
-    { id: 17, title: "多功能刀具", completed: false },
-    { id: 18, title: "太空食品", completed: false },
-    { id: 19, title: "备用靴子", completed: false },
-    { id: 20, title: "太空笔", completed: false },
-  ];
-  setTodos(initTodos);
-  }, [setTodos]);
+    fetchTodos();
+    //handlePagination(defaultPage, defaultPageSize);
+  }, []);
 
   return (
     <section className={styles.todoList}>
@@ -84,7 +72,16 @@ export default function TodoList() {
         completedCount={completedCount}
         uncompletedCount={uncompletedCount}
       />
-      <Pagination />
+      {/*<Pagination
+        className={styles.pagination}
+        align="end"
+        page={page}
+        pageSize={pageSize}
+        hideOnSinglePage={false}
+        onChange={(page, pageSize) => handlePagination(page, pageSize)}
+        showSizeChanger
+        showQuickJumper
+      />*/}
       <AddItem />
       {renderFilterDiv()}
       {renderTodoItems()}
