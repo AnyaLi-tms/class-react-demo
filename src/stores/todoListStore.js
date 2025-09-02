@@ -13,7 +13,11 @@ export const useTodoListStore = create((set, get) => ({
   defaultPageSize: 5,
   page: 1,
   pageSize: 5,
+  status: "",
   currentPageTodos: [],
+  setPage: (page) => set({ page }),
+  setPageSize: (pageSize) => set({ pageSize }),
+  setStatus: (status) => set({ status }),
   setTodos: (todos) => set({ todos }),
   setPageTodos: (pageTodos) => set({ pageTodos }),
   setIsFilter: (isFilter) => set({ isFilter }),
@@ -43,14 +47,12 @@ export const useTodoListStore = create((set, get) => ({
     })
   },
   fetchTodos: async () => {
-    const response = await Api.get("/todos");
-    set({ todos: response.data });
-  },
-  fetchTodosByPagination: async (page, pageSize) => {
+    const {page, pageSize, status} = get();
     const response = await Api.get("/todos", {
       params: {
         page,
-        pageSize
+        pageSize,
+        status
       }
     });
     set({ todos: response.data });

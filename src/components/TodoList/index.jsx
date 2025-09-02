@@ -18,7 +18,8 @@ export default function TodoList() {
     deleteTodos,
     page,
     pageSize,
-    fetchTodosByPagination,
+    setPage,
+    setPageSize,
   } = useTodoListStore();
   const totalCount = todos.length;
   const completedCount = todos.filter((item) => item.status==="DONE").length;
@@ -27,7 +28,9 @@ export default function TodoList() {
   const handlePagination = useCallback(
     (page, pageSize) => {
       setSearchParams({ page, pageSize });
-      fetchTodosByPagination(page, pageSize);
+      setPage(page);
+      setPageSize(pageSize);
+      fetchTodos();
     },
     []
   );
@@ -88,9 +91,10 @@ export default function TodoList() {
       <Pagination
         className={styles.pagination}
         align="end"
-        defaultPage={page}
-        defaultPageSize={pageSize}
+        current={page}
+        pageSize={pageSize}
         hideOnSinglePage={false}
+        pageSizeOptions={['5', '10', '20', '50']}
         onChange={(page, pageSize) => handlePagination(page, pageSize)}
         showSizeChanger
         showQuickJumper
