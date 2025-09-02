@@ -3,26 +3,47 @@ import styles from "./index.module.css";
 import TodoItem from "./components/TodoItem";
 import AddItem from "./components/AddItem";
 import Summary from "./components/Summary";
-import { Pagination } from 'antd';
+import { Pagination } from "antd";
 import { useCallback, useEffect } from "react";
-import { Link, useSearchParams } from 'react-router';
+import { Link, useSearchParams } from "react-router";
+import responseTodos from "./todoItems.json";
 
 export default function TodoList() {
-  const { todoTitle, todos, fetchTodos, pageTodos, setPageTodos, setTodos, isFilter, setIsFilter, setTodoStatus, clearCompleted, defaultPage, defaultPageSize, page, pageSize, setPagination } =
-    useTodoListStore();
+  const {
+    todoTitle,
+    todos,
+    setTodos,
+    currentPageTodos,
+    fetchTodos,
+    setPagination,
+    isFilter,
+    setIsFilter,
+    setTodoStatus,
+    clearCompleted,
+    defaultPage,
+    defaultPageSize,
+    page,
+    pageSize,
+  } = useTodoListStore();
   const totalCount = todos.length;
   const uncompletedCount = todos.filter((item) => !item.completed).length;
   const completedCount = totalCount - uncompletedCount;
-  const filterItems = isFilter
-    ? todos.filter((item) => !item.completed)
-    : todos;
   const [searchParams, setSearchParams] = useSearchParams();
-  const handlePagination = useCallback((page, pageSize) => {
-    setSearchParams({ page, pageSize });
-    const currentPageTodos = setPagination(searchParams.get('page') || defaultPage, searchParams.get('pageSize') || defaultPageSize);
-    setPageTodos(currentPageTodos);
-  }, [defaultPage, defaultPageSize, searchParams, setPagination, setSearchParams]);
-
+  const handlePagination = useCallback(
+    (page, pageSize) => {
+      console.log(page, pageSize);
+      setSearchParams({ page, pageSize });
+      setPagination(
+        searchParams.get("page") || defaultPage,
+        searchParams.get("pageSize") || defaultPageSize
+      );
+      console.log(currentPageTodos);
+    },
+    [defaultPage, defaultPageSize, searchParams, setPagination, setSearchParams]
+  );
+  const filterItems = isFilter
+    ? currentPageTodos.filter((item) => !item.completed)
+    : currentPageTodos;
   const renderFilterDiv = () => {
     return (
       <div className={styles.filter}>
@@ -59,8 +80,10 @@ export default function TodoList() {
   };
 
   useEffect(() => {
-    fetchTodos();
-    //handlePagination(defaultPage, defaultPageSize);
+    //fetchTodos();
+    const res = responseTodos;
+    setTodos(res);
+    handlePagination(defaultPage, defaultPageSize);
   }, []);
 
   return (
@@ -71,16 +94,16 @@ export default function TodoList() {
         completedCount={completedCount}
         uncompletedCount={uncompletedCount}
       />
-      {/*<Pagination
+      <Pagination
         className={styles.pagination}
         align="end"
-        page={page}
-        pageSize={pageSize}
+        defaultPage={page}
+        defaultPageSize={pageSize}
         hideOnSinglePage={false}
         onChange={(page, pageSize) => handlePagination(page, pageSize)}
         showSizeChanger
         showQuickJumper
-      />*/}
+      />
       <AddItem />
       {renderFilterDiv()}
       {renderTodoItems()}

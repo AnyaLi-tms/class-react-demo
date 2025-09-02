@@ -13,6 +13,7 @@ export const useTodoListStore = create((set, get) => ({
   defaultPageSize: 5,
   page: 1,
   pageSize: 5,
+  currentPageTodos: [],
   setTodos: (todos) => set({ todos }),
   setPageTodos: (pageTodos) => set({ pageTodos }),
   setIsFilter: (isFilter) => set({ isFilter }),
@@ -28,13 +29,10 @@ export const useTodoListStore = create((set, get) => ({
     set((state) => ({
       todos: state.todos.filter((todo) => !todo.completed),
     })),
-  setPage: (page) => set({ page }),
-  setPageSize: (pageSize) => set({ pageSize }),
-  setPagination: (page, pageSize) => set({ page, pageSize }),
-  currentPageTodos: () => {
+  setPagination: () => {
     const { todos, page, pageSize } = get();
     const start = (page - 1) * pageSize;
-    return todos.slice(start, start + pageSize);
+    set({ currentPageTodos: todos.slice(start, start + pageSize) });
   },
   fetchTodos: async () => {
     const response = await Api.get("/todos");
