@@ -6,44 +6,38 @@ import Summary from "./components/Summary";
 import { Pagination } from "antd";
 import { useCallback, useEffect } from "react";
 import { Link, useSearchParams } from "react-router";
-import responseTodos from "./todoItems.json";
 
 export default function TodoList() {
   const {
     todoTitle,
     todos,
-    setTodos,
-    currentPageTodos,
     fetchTodos,
-    setPagination,
     isFilter,
     setIsFilter,
     setTodoStatus,
-    clearCompleted,
-    defaultPage,
-    defaultPageSize,
+    deleteTodos,
     page,
     pageSize,
+    fetchTodosByPagination,
   } = useTodoListStore();
   const totalCount = todos.length;
-  const uncompletedCount = todos.filter((item) => !item.completed).length;
-  const completedCount = totalCount - uncompletedCount;
+  const completedCount = todos.filter((item) => item.status==="DONE").length;
+  const uncompletedCount = totalCount - completedCount;
   const [searchParams, setSearchParams] = useSearchParams();
   const handlePagination = useCallback(
     (page, pageSize) => {
-      console.log(page, pageSize);
       setSearchParams({ page, pageSize });
-      setPagination(
-        searchParams.get("page") || defaultPage,
-        searchParams.get("pageSize") || defaultPageSize
-      );
-      console.log(currentPageTodos);
+      fetchTodosByPagination(page, pageSize);
     },
-    [defaultPage, defaultPageSize, searchParams, setPagination, setSearchParams]
+    []
   );
   const filterItems = isFilter
-    ? currentPageTodos.filter((item) => !item.completed)
-    : currentPageTodos;
+    ? todos.filter((item) => item.status!=="DONE")
+    : todos;
+  const handleDelete = () => {
+    const idList = todos.filter(item => item.status === "DONE").map(item => item.id);
+    deleteTodos(idList);
+  }
   const renderFilterDiv = () => {
     return (
       <div className={styles.filter}>
@@ -73,17 +67,14 @@ export default function TodoList() {
   };
   const renderClearButton = () => {
     return (
-      <button className={styles.clearButton} onClick={clearCompleted}>
+      <button className={styles.clearButton} onClick={handleDelete}>
         清除已完成的({completedCount})
       </button>
     );
   };
 
   useEffect(() => {
-    //fetchTodos();
-    const res = responseTodos;
-    setTodos(res);
-    handlePagination(defaultPage, defaultPageSize);
+    fetchTodos();
   }, []);
 
   return (

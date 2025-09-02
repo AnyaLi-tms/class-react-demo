@@ -5,7 +5,6 @@ import Counter from "./components/Counter";
 import TodoList from "./components/TodoList";
 import { Route, Routes } from "react-router";
 import Home from "./components/Home";
-//import TodoList from "./TodoListNew";
 
 function App() {
   return (

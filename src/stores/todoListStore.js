@@ -18,24 +18,52 @@ export const useTodoListStore = create((set, get) => ({
   setPageTodos: (pageTodos) => set({ pageTodos }),
   setIsFilter: (isFilter) => set({ isFilter }),
   setInputValue: (inputValue) => set({ inputValue }),
-  addTodo: (todo) => set((state) => ({ todos: [ todo, ...state.todos] })),
-  setTodoStatus: (id) =>
-    set((state) => ({
-      todos: state.todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      ),
-    })),
-  clearCompleted: () =>
-    set((state) => ({
-      todos: state.todos.filter((todo) => !todo.completed),
-    })),
-  setPagination: () => {
-    const { todos, page, pageSize } = get();
-    const start = (page - 1) * pageSize;
-    set({ currentPageTodos: todos.slice(start, start + pageSize) });
+  addTodo: async (todo) => {
+    const response = await Api.post("/todos", todo);
+    set({ todos: [response.data, ...get().todos] });
+    // get().fetchTodos();
+  },
+  deleteTodos: async (idList) => {
+    await Promise.all(
+      idList.map((id) => Api.delete(`/todos/${id}`))
+    );
+    get().fetchTodos();
+  },
+  setTodoStatus: async (id) => {
+    set(async (state) => {
+      const target = state.todos.find((t) => t.id === id)
+      if (!target) return state;
+      console.log(target.status);
+      const newStatus = target.status === "DONE" ? "TODO" : "DONE"
+      console.log(newStatus);
+      const updatedTodo = { ...target, status: newStatus }
+      console.log(updatedTodo);
+      await Api.put(`/todos/${id}`, updatedTodo);      
+      get().fetchTodos();
+    })
   },
   fetchTodos: async () => {
     const response = await Api.get("/todos");
     set({ todos: response.data });
-  }
-}));
+  },
+  fetchTodosByPagination: async (page, pageSize) => {
+    const response = await Api.get("/todos", {
+      params: {
+        page,
+        pageSize
+      }
+    });
+    set({ todos: response.data });
+  },
+  fetchTodosByStatus: async (status) => {
+    const {page, pageSize} = get();
+    const response = await Api.get("/todos", {
+      params: {
+        page,
+        pageSize,
+        status
+      }
+    });
+    set({ todos: response.data });
+  },
+}))

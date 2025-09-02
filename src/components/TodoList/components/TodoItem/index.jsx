@@ -1,6 +1,7 @@
 import styles from "./index.module.css";
 
-function TodoItem({ title, completed, onToggle }) {
+function TodoItem({ title, status, onToggle }) {
+  const completed = status === "DONE";
   const itemClassName = `${styles.item} ${completed ? styles.checked : ""}`;
   return (
     <li className={itemClassName}>

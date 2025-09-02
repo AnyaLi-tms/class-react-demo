@@ -8,9 +8,7 @@ const AddItem = () => {
     const value = inputValue.trim();
     if (!value) return;
     addTodo({
-      id: Date.now(), // 如需用nanoid: nanoid(),
-      title: value,
-      completed: false,
+      title: value
     });
     setInputValue("");
   };
