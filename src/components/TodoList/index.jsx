@@ -5,7 +5,6 @@ import AddItem from "./components/AddItem";
 import Summary from "./components/Summary";
 import { Pagination } from 'antd';
 import { useCallback, useEffect } from "react";
-import responseTodos from "./todoItems.json"
 import { Link, useSearchParams } from 'react-router';
 
 export default function TodoList() {
@@ -33,7 +32,7 @@ export default function TodoList() {
             checked={isFilter}
             onChange={() => setIsFilter(!isFilter)}
           />
-          过滤已打包的物品
+          过滤已完成的事项
         </label>
       </div>
     );

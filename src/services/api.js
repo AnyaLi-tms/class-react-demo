@@ -2,8 +2,8 @@ import axios from "axios";
 
 // 创建axios实例
 const api = axios.create({
-  baseURL: "https://jsonplaceholder.typicode.com",
-  timeout: 1000,
+  baseURL: "/api",
+  timeout: 2000,
   headers: {
     'Content-Type': 'application/json',
   }

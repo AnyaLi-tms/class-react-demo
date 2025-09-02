@@ -2,7 +2,7 @@ import { create } from "zustand";
 import Api from "../services/api";
 
 export const useTodoListStore = create((set, get) => ({
-  todoTitle: "Sally Ride 的 行李清单",
+  todoTitle: "Sally Ride 的 待办清单",
   loading: false,
   error: null,
   todos: [],
@@ -17,7 +17,7 @@ export const useTodoListStore = create((set, get) => ({
   setPageTodos: (pageTodos) => set({ pageTodos }),
   setIsFilter: (isFilter) => set({ isFilter }),
   setInputValue: (inputValue) => set({ inputValue }),
-  addTodo: (todo) => set((state) => ({ todos: [...state.todos, todo] })),
+  addTodo: (todo) => set((state) => ({ todos: [ todo, ...state.todos] })),
   setTodoStatus: (id) =>
     set((state) => ({
       todos: state.todos.map((todo) =>
