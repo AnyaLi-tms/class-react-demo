@@ -93,6 +93,7 @@ export default function TodoList() {
         align="end"
         current={page}
         pageSize={pageSize}
+        total={totalCount}
         hideOnSinglePage={false}
         pageSizeOptions={['5', '10', '20', '50']}
         onChange={(page, pageSize) => handlePagination(page, pageSize)}
