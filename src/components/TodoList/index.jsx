@@ -24,7 +24,7 @@ export default function TodoList() {
   const totalCount = todos.length;
   const completedCount = todos.filter((item) => item.status==="DONE").length;
   const uncompletedCount = totalCount - completedCount;
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
   const handlePagination = useCallback(
     (page, pageSize) => {
       setSearchParams({ page, pageSize });
